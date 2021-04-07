@@ -1,0 +1,15 @@
+@import "~styles/font";
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  text-align: center;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  font-family: "Roboto", Helvetica, sans-serif;
+}
