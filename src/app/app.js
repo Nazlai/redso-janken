@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import Routes from "routes";
+import { auth } from "firebaseUtils";
 
 const App = () => {
-  return <div>Hello world</div>;
+  useEffect(() => {
+    auth.signInAnonymously();
+  }, []);
+
+  return (
+    <Router>
+      <Routes />
+    </Router>
+  );
 };
 
 export default App;
