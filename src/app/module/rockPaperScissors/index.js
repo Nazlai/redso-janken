@@ -1,6 +1,6 @@
-const ROCK = "ROCK";
-const PAPER = "PAPER";
-const SCISSOR = "SCISSOR";
+export const ROCK = "ROCK";
+export const PAPER = "PAPER";
+export const SCISSOR = "SCISSOR";
 
 const outcome = {
   ROCK: [SCISSOR],
@@ -8,13 +8,16 @@ const outcome = {
   SCISSOR: [PAPER],
 };
 
-export const getWinner = (arr) => {
-  const weapons = arr.map((i) => i.weapon);
+export const getWinner = (players) => {
+  if (!players.length) {
+    return { result: [] };
+  }
+  const weapons = players.map((i) => i.weapon);
   if (hasAllWeapons(weapons) || hasSameWeapon(weapons)) {
     return { result: ["draw"] };
   }
   const winningWeapon = getWinningWeapon(weapons);
-  const result = arr
+  const result = players
     .filter((i) => i.weapon === winningWeapon)
     .map((i) => i.player);
   return { result };
