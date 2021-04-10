@@ -31,31 +31,43 @@ const Result = ({ result }) => {
 
 const Game = (props) => {
   const [weapon, setWeapon] = useState("");
+  const [players, setPlayers] = useState(0);
+  const [playerMoves, setPlayerMoves] = useState([]);
   const [winner, setWinner] = useState([]);
   const [isJoin, setJoin] = useState(false);
   const location = useLocation();
   const gameId = new URLSearchParams(location.search).get("gameId");
 
   useEffect(() => {
-    const update = db
+    const subscribe = db
       .collection("games")
       .doc(gameId)
-      .onSnapshot((doc) => {
-        console.log(doc.data(), auth.currentUser.uid);
-        const { threads, players, newGame } = doc.data();
-        const { result } = getWinner(threads);
-        let join = players.includes(auth.currentUser.uid) ? true : false;
-        setJoin(join);
-        if (threads.length === players.length && players.length > 1) {
-          setWinner(result);
-        }
-        if (newGame) {
-          setWinner([]);
-          setWeapon("");
-        }
+      .onSnapshot((snapshot) => {
+        const { players } = snapshot.data();
+        setPlayers(players.length);
       });
-    return () => update();
+    return subscribe;
   }, []);
+
+  useEffect(() => {
+    const subscribe = db
+      .collection("games")
+      .doc(gameId)
+      .collection("moves")
+      .onSnapshot((snapshot) => {
+        const players = [];
+        snapshot.forEach((doc) => players.push(doc.data()));
+        setPlayerMoves(players);
+      });
+    return subscribe;
+  }, []);
+
+  useEffect(() => {
+    if (players === playerMoves.length && players > 1) {
+      const { result } = getWinner(playerMoves);
+      setWinner(result);
+    }
+  }, [players, playerMoves.length]);
 
   const leaveGame = () => {
     const docRef = db.collection("games").doc(gameId);
@@ -78,35 +90,29 @@ const Game = (props) => {
     const { uid: userId } = auth.currentUser;
     const player = {
       player: userId,
-      weapon,
+      weapon: weapon,
     };
-    const docRef = db.collection("games").doc(gameId);
-    db.runTransaction((transaction) => {
-      return transaction.get(docRef).then((doc) => {
-        if (!doc.exists) {
-          throw "document does not exist!";
-        }
-        const threads = doc.data().threads;
-        const newThread = [...threads, player];
-        transaction.update(docRef, { threads: newThread, newGame: false });
-      });
-    })
-      .then(() => console.log("transaction successful"))
-      .catch((error) => console.log(error));
+    const subDocRef = db
+      .collection("games")
+      .doc(gameId)
+      .collection("moves")
+      .doc(userId);
+
+    subDocRef
+      .set(player)
+      .then(() => console.log("success"))
+      .catch((error) => console.log(error, "error"));
   };
 
   const newGame = () => {
-    const docRef = db.collection("games").doc(gameId);
-    db.runTransaction((transaction) => {
-      return transaction.get(docRef).then((doc) => {
-        if (!doc.exists) {
-          throw "document does not exist";
-        }
-        transaction.update(docRef, { threads: [], newGame: true });
-      });
-    })
+    const docRef = db.collection("games").doc(gameId).collection("moves");
+
+    docRef
+      .get()
+      .then((docs) => docs.forEach((doc) => doc.ref.delete()))
       .then(() => console.log("game cleared"))
-      .catch(console.error);
+      .catch(console.log);
+    setWinner([]);
   };
 
   return (
