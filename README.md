@@ -1,8 +1,8 @@
-#Janken
+# Janken
 
 Basically, its a multiplayer rock paper scissors game.
 
-##Includes
+## Includes
 
 - react v17
 - react-router v5
