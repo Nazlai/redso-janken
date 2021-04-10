@@ -2,7 +2,7 @@
 
 import { getWinner, ROCK, PAPER, SCISSOR } from "./";
 
-const draw = { result: ["draw"] };
+const draw = { isDraw: true, winners: [] };
 
 describe("tests draw", () => {
   test("should return draw if one of each weapons are present", () => {
@@ -51,7 +51,7 @@ describe("tests win condition", () => {
         { player: "nate", weapon: PAPER },
         { player: "robinson", weapon: ROCK },
       ])
-    ).toEqual({ result: ["john", "nate"] });
+    ).toEqual({ isDraw: false, winners: ["john", "nate"] });
   });
   test("should return players if using winning weapon", () => {
     expect(
@@ -59,7 +59,7 @@ describe("tests win condition", () => {
         { player: "john", weapon: PAPER },
         { player: "nate", weapon: ROCK },
       ])
-    ).toEqual({ result: ["john"] });
+    ).toEqual({ isDraw: false, winners: ["john"] });
   });
   test("should return player if using winning weapon", () => {
     expect(
@@ -67,7 +67,7 @@ describe("tests win condition", () => {
         { player: "john", weapon: ROCK },
         { player: "nate", weapon: PAPER },
       ])
-    ).toEqual({ result: ["nate"] });
+    ).toEqual({ isDraw: false, winners: ["nate"] });
   });
   test("should return player if using winning weapon", () => {
     expect(
@@ -75,7 +75,7 @@ describe("tests win condition", () => {
         { player: "john", weapon: ROCK },
         { player: "nate", weapon: SCISSOR },
       ])
-    ).toEqual({ result: ["john"] });
+    ).toEqual({ isDraw: false, winners: ["john"] });
   });
   test("should return player if using winning weapon", () => {
     expect(
@@ -83,12 +83,12 @@ describe("tests win condition", () => {
         { player: "john", weapon: PAPER },
         { player: "nate", weapon: SCISSOR },
       ])
-    ).toEqual({ result: ["nate"] });
+    ).toEqual({ isDraw: false, winners: ["nate"] });
   });
 });
 
 describe("test invalid data input", () => {
   test("should return empty array if input is empty", () => {
-    expect(getWinner([])).toEqual({ result: [] });
+    expect(getWinner([])).toEqual({ isDraw: false, winners: [] });
   });
 });

@@ -10,17 +10,17 @@ const outcome = {
 
 export const getWinner = (players) => {
   if (!players.length) {
-    return { result: [] };
+    return { isDraw: false, winners: [] };
   }
   const weapons = players.map((i) => i.weapon);
   if (hasAllWeapons(weapons) || hasSameWeapon(weapons)) {
-    return { result: ["draw"] };
+    return { isDraw: true, winners: [] };
   }
   const winningWeapon = getWinningWeapon(weapons);
   const result = players
     .filter((i) => i.weapon === winningWeapon)
     .map((i) => i.player);
-  return { result };
+  return { isDraw: false, winners: result };
 };
 
 const hasAllWeapons = (weapons) => {
