@@ -1,13 +1,8 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { Grid, Button } from "@material-ui/core";
+import { Button, Typography, Box, Container } from "@material-ui/core";
 import { auth, cloudFunctions } from "firebaseUtils";
-import { PLAY_GAME } from "constants/routes";
-import style from "./landing.module";
-import { GAME_LIST } from "constants/routes";
-
-// FIXME
-// extract firebase method
+import { PLAY_GAME, GAME_LIST } from "constants/routes";
 
 const Landing = () => {
   const history = useHistory();
@@ -34,23 +29,51 @@ const Landing = () => {
   };
 
   return (
-    <Grid
-      container
-      direction="column"
-      alignItems="center"
-      justify="center"
-      className={style.container}
-    >
-      <div className={style.title}>Janken</div>
-      <div className={style.btnContainer}>
-        <Button color="primary" variant="contained" onClick={handleCreateGame}>
-          new game
-        </Button>
-        <Button color="primary" variant="contained" onClick={routeToGameList}>
-          view games
-        </Button>
-      </div>
-    </Grid>
+    <Container>
+      <Box
+        height="50vh"
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-end"
+        alignItems="center"
+      >
+        <Typography variant="h1">Janken</Typography>
+        <Box p={2}>
+          <Typography>Play rock paper scissors</Typography>
+          <Typography>with your friends!</Typography>
+        </Box>
+      </Box>
+      <Box
+        height="50vh"
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Box p={1} width="70%">
+          <Button
+            size="large"
+            color="secondary"
+            variant="contained"
+            onClick={handleCreateGame}
+            fullWidth
+          >
+            new game
+          </Button>
+        </Box>
+        <Box p={1} width="70%">
+          <Button
+            size="large"
+            color="secondary"
+            variant="contained"
+            onClick={routeToGameList}
+            fullWidth
+          >
+            view games
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 
