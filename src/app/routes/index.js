@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import * as ROUTES from "constants/routes";
-import { Landing, GameList, JoinGame, PlayGame, ShareGame } from "screens";
+import { Landing, GameList, JoinGame, PlayGame } from "screens";
 
 const Routes = () => {
   return (
@@ -17,9 +17,6 @@ const Routes = () => {
       </Route>
       <Route path={ROUTES.PLAY_GAME}>
         <PlayGame />
-      </Route>
-      <Route path={ROUTES.SHARE_GAME}>
-        <ShareGame />
       </Route>
     </Switch>
   );
