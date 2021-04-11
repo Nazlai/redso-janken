@@ -18,9 +18,10 @@ export const auth = app.auth();
 
 export const functions = app.functions();
 
-export const cloudFnApi = {
-  getGames: () => functions.httpsCallable("hello"),
-  commitMove: () => functions.httpsCallable("commitMove"),
-  newGame: () => functions.httpsCallable("newGame"),
+export const cloudFunctions = {
+  commitMove: functions.httpsCallable("commitMove"),
+  newGame: functions.httpsCallable("newGame"),
   leaveGame: functions.httpsCallable("leaveGame"),
+  createGame: functions.httpsCallable("createGame"),
+  joinGame: functions.httpsCallable("joinGame"),
 };

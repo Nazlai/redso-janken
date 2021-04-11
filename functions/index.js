@@ -9,6 +9,13 @@ const firestore = admin.firestore();
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
 
+const printError = (errorName, error) => {
+  console.log(`---${errorName} error start---`);
+  console.log(error);
+  console.log(`---${errorName} error end---`);
+  return;
+};
+
 exports.checkWinner = functions.firestore
   .document("games/{gameId}/moves/{playerId}")
   .onCreate(async (snapshot, context) => {
@@ -35,59 +42,125 @@ exports.checkWinner = functions.firestore
     return null;
   });
 
-exports.commitMove = functions.https.onCall((data, context) => {
+// adds player submitted move to moves subcollection
+// if player is not present
+exports.commitMove = functions.https.onCall(async (data) => {
   const { gameId, player } = data;
   const movesRef = firestore
     .collection("games")
     .doc(gameId)
     .collection("moves");
-  // FIXME return picked move for player
-  return movesRef
-    .where("player", "==", player)
-    .get()
-    .then((snapshot) => {
-      if (snapshot.size === 1) {
-        return { message: "already submitted move" };
-      } else {
-        return firestore
-          .doc(`games/${gameId}/moves/${player}`)
-          .set(data)
-          .then(() => "move set");
-      }
-    });
+  const docRef = firestore.doc(`games/${gameId}/moves/${player}`);
+
+  try {
+    const moveSnapshot = await movesRef.where("player", "==", player).get();
+    const isPlayerInCollection = moveSnapshot.size === 1;
+    if (isPlayerInCollection) {
+      const [move] = moveSnapshot.docs.map((doc) => doc.data());
+      return {
+        message: "You've already submitted a move",
+        move: move.weapon,
+      };
+    } else {
+      await docRef.set({
+        ...data,
+        created: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      return {
+        message: "Move set",
+      };
+    }
+  } catch (error) {
+    printError("commit move", error);
+    return error;
+  }
 });
 
-exports.newGame = functions.https.onCall((data, context) => {
+// resets game status and clears moves subcollection
+exports.newGame = functions.https.onCall(async (data) => {
   const { gameId } = data;
   const subDocRef = firestore
     .collection("games")
     .doc(gameId)
     .collection("moves");
   const gameRef = firestore.doc(`games/${gameId}`);
-
-  return subDocRef
-    .get()
-    .then((snapshot) => {
-      snapshot.forEach((doc) => doc.ref.delete());
-    })
-    .then(() => {
-      gameRef.update({ finished: false, winners: [], isDraw: false });
-    })
-    .then(() => "game cleared")
-    .catch((error) => error);
+  try {
+    const subDocSnapshot = await subDocRef.get();
+    await Promise.all(subDocSnapshot.docs.map((doc) => doc.ref.delete()));
+    await gameRef.update({
+      finished: false,
+      winners: [],
+      isDraw: false,
+    });
+    return {
+      message: "Game reset",
+    };
+  } catch (error) {
+    printError("new game", error);
+    return error;
+  }
 });
 
-exports.leaveGame = functions.https.onCall((data, context) => {
+// removes player from game
+exports.leaveGame = functions.https.onCall(async (data) => {
   const { gameId, playerId } = data;
   const gameRef = firestore.doc(`games/${gameId}`);
 
-  gameRef
-    .get()
-    .then((snapshot) => {
-      const { players } = snapshot.data();
+  try {
+    await firestore.runTransaction(async (transaction) => {
+      const doc = await transaction.get(gameRef);
+      if (!doc.exists) throw "game not found";
+      const { players } = doc.data();
       const newPlayers = players.filter((player) => player !== playerId);
-      gameRef.update({ players: newPlayers });
-    })
-    .then(() => "success")
-    .catch((error) => error);
+      transaction.update(gameRef, { players: newPlayers });
+    });
+    return { message: "You left the game" };
+  } catch (error) {
+    printError("leave game", error);
+    return error;
+  }
+});
+
+// create new game document in games collection
+exports.createGame = functions.https.onCall(async (data) => {
+  const { playerId } = data;
+  const gameRef = firestore.collection("games").doc();
+
+  try {
+    await gameRef.set({
+      gameId: gameRef.id,
+      created: admin.firestore.FieldValue.serverTimestamp(),
+      players: [playerId],
+      finished: false,
+    });
+    return {
+      message: "Game created",
+      gameId: gameRef.id,
+    };
+  } catch (error) {
+    printError("create game", error);
+    return error;
+  }
+});
+
+// adds player to game document
+exports.joinGame = functions.https.onCall(async (data) => {
+  const { gameId, playerId } = data;
+  const gameRef = firestore.collection("games").doc(gameId);
+
+  try {
+    await firestore.runTransaction(async (transaction) => {
+      const doc = await transaction.get(gameRef);
+      if (!doc.exists) throw "game not found";
+      const players = doc.data().players;
+      const newPlayers = players.includes(playerId)
+        ? players
+        : players.concat(playerId);
+      transaction.update(gameRef, { players: newPlayers });
+    });
+    return { message: "Joined game" };
+  } catch (error) {
+    printError("join game", error);
+    return error;
+  }
 });
