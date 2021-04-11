@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useHistory, useLocation, Redirect } from "react-router-dom";
-import { Container, Grid, Typography, Button } from "@material-ui/core";
-import { db, auth } from "firebaseUtils";
+import { Container, Grid, Button } from "@material-ui/core";
+import { auth, cloudFunctions } from "firebaseUtils";
 import { LANDING, PLAY_GAME } from "constants/routes";
 import { SimpleDialog } from "components/dialog";
 
@@ -16,33 +16,19 @@ const JoinGame = () => {
   const handleJoin = () => {
     const { uid } = auth.currentUser;
 
-    const docRef = db.collection("games").doc(gameId);
-
-    db.runTransaction((transaction) => {
-      return transaction
-        .get(docRef)
-        .then((doc) => {
-          if (!doc.exists) {
-            throw "document does not exist";
-          }
-          const players = doc.data().players;
-          const newPlayers = players.includes(uid)
-            ? players
-            : players.concat(uid);
-          transaction.update(docRef, { players: newPlayers });
-        })
-        .then(() => {
-          const location = {
-            pathname: PLAY_GAME,
-            search: `gameId=${gameId}`,
-          };
-          history.push(location);
-        })
-        .catch((error) => {
-          console.log(error);
-          setShowDialog(true);
-        });
-    });
+    cloudFunctions
+      .joinGame({ gameId, playerId: uid })
+      .then(() => {
+        const location = {
+          pathname: PLAY_GAME,
+          search: `gameId=${gameId}`,
+        };
+        history.push(location);
+      })
+      .catch((error) => {
+        console.log(error);
+        setShowDialog(true);
+      });
   };
 
   if (!gameId) {

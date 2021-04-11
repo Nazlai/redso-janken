@@ -1,8 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { Grid, Button } from "@material-ui/core";
-import { db, auth } from "firebaseUtils";
-import createGame from "module/createGame";
+import { auth, cloudFunctions } from "firebaseUtils";
 import { PLAY_GAME } from "constants/routes";
 import style from "./landing.module";
 import { GAME_LIST } from "constants/routes";
@@ -15,16 +14,15 @@ const Landing = () => {
 
   const handleCreateGame = () => {
     const { uid } = auth.currentUser;
-    const newDocRef = db.collection("games").doc();
-    const { id: docId } = newDocRef;
-    const currentTime = new Date().toISOString();
 
-    newDocRef
-      .set(createGame({ uid, docId, currentTime }))
-      .then(() => {
+    cloudFunctions
+      .createGame({ playerId: uid })
+      .then((response) => response.data)
+      .then((data) => {
+        const { gameId } = data;
         const location = {
           pathname: PLAY_GAME,
-          search: `gameId=${docId}`,
+          search: `gameId=${gameId}`,
         };
         history.push(location);
       })
