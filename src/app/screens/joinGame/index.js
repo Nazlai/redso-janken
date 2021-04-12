@@ -1,6 +1,16 @@
 import React, { useState } from "react";
 import { useHistory, useLocation, Redirect } from "react-router-dom";
-import { Container, Grid, Button } from "@material-ui/core";
+import { withNavigation } from "components/navigation";
+import {
+  Container,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Divider,
+} from "@material-ui/core";
 import { auth, cloudFunctions } from "firebaseUtils";
 import { LANDING, PLAY_GAME } from "constants/routes";
 import { SimpleDialog } from "components/dialog";
@@ -37,13 +47,40 @@ const JoinGame = () => {
 
   return (
     <Container>
-      <Grid container direction="column" alignItems="center" justify="center">
-        <Button size="large" color="primary" onClick={handleJoin}>
-          join game
-        </Button>
-      </Grid>
+      <Box
+        height="calc(100vh - 64px)"
+        display="flex"
+        direction="column"
+        alignItems="center"
+        justify="center"
+      >
+        <Box width="100%" display="flex" justifyContent="center">
+          <Card>
+            <CardContent>
+              <Typography variant="h4">Hi there</Typography>
+              <Divider />
+              <Box p={4}>
+                <Typography>
+                  You&apos;ve been invited to join a game!
+                </Typography>
+              </Box>
+            </CardContent>
+            <CardActions align="center">
+              <Button
+                size="large"
+                color="secondary"
+                variant="contained"
+                onClick={handleJoin}
+                fullWidth
+              >
+                join game
+              </Button>
+            </CardActions>
+          </Card>
+        </Box>
+      </Box>
       <SimpleDialog title="Uh oh" open={showDialog} onClose={handleClose}>
-        <p>game does not exist</p>
+        <Typography>game does not exist</Typography>
         <Button color="primary" onClick={handleClose}>
           Close
         </Button>
@@ -52,4 +89,4 @@ const JoinGame = () => {
   );
 };
 
-export default JoinGame;
+export default withNavigation(JoinGame);
