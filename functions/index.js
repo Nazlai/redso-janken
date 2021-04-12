@@ -32,11 +32,13 @@ exports.checkWinner = functions.firestore
     const totalPlayers = gameData.data().players.length;
 
     if (totalPlayers === moves.length && totalPlayers > 1) {
-      const { winners, isDraw } = getWinner(moves);
+      const { winners, isDraw, winningWeapon } = getWinner(moves);
       return gameRef.update({
         finished: true,
         winners: winners,
         isDraw: isDraw,
+        winningWeapon: winningWeapon,
+        restarted: false,
       });
     }
     return null;
@@ -59,6 +61,7 @@ exports.commitMove = functions.https.onCall(async (data) => {
       const [move] = moveSnapshot.docs.map((doc) => doc.data());
       return {
         message: "You've already submitted a move",
+        warning: true,
         move: move.weapon,
       };
     } else {
@@ -91,6 +94,8 @@ exports.newGame = functions.https.onCall(async (data) => {
       finished: false,
       winners: [],
       isDraw: false,
+      winningWeapon: "",
+      restarted: true,
     });
     return {
       message: "Game reset",
