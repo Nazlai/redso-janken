@@ -83,12 +83,12 @@ const PlayGame = () => {
           winningWeapon,
           restarted,
         } = snapshot.data();
-        console.log(snapshot.data());
+
         const isPlayerPresent = players.includes(auth.currentUser.uid);
         if (!isPlayerPresent) {
           setRedirect(`${JOIN_GAME}?gameId=${gameId}`);
         }
-        setState({ finished, isDraw, winners, winningWeapon });
+        setState({ finished, isDraw, winners, winningWeapon, players });
         if (restarted) {
           setWeapon("");
         }
@@ -171,6 +171,11 @@ const PlayGame = () => {
           <Typography className={classes.feedback}>
             {displayWinText(state)}
           </Typography>
+          {state.players ? (
+            <Typography className={classes.feedback}>
+              Players in room: {state.players.length}
+            </Typography>
+          ) : null}
         </Box>
         {state.finished ? null : (
           <Box p={2}>
