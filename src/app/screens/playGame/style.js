@@ -6,9 +6,9 @@ const iconStyle = {
 };
 
 const useStyles = makeStyles((theme) => {
+  const { secondary } = theme.palette;
   const iconColors = (type) => (props) =>
-    props.weapon === type ? secondary.main : auxiliary.main;
-  const { auxiliary, secondary } = theme.palette;
+    props.weapon === type ? secondary.main : secondary.contrastText;
   return {
     rock: {
       ...iconStyle,
