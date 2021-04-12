@@ -8,19 +8,25 @@ const outcome = {
   SCISSOR: [PAPER],
 };
 
+export const getWinText = {
+  ROCK: "ROCK SMASHES SCISSOR",
+  PAPER: "PAPER COVERS ROCK",
+  SCISSOR: "SCISSOR CUTS PAPER",
+};
+
 export const getWinner = (players) => {
   if (!players.length) {
-    return { isDraw: false, winners: [] };
+    return { isDraw: false, winners: [], winningWeapon: "" };
   }
   const weapons = players.map((i) => i.weapon);
   if (hasAllWeapons(weapons) || hasSameWeapon(weapons)) {
-    return { isDraw: true, winners: [] };
+    return { isDraw: true, winners: [], winningWeapon: "" };
   }
   const winningWeapon = getWinningWeapon(weapons);
   const result = players
     .filter((i) => i.weapon === winningWeapon)
     .map((i) => i.player);
-  return { isDraw: false, winners: result };
+  return { isDraw: false, winners: result, winningWeapon: winningWeapon };
 };
 
 const hasAllWeapons = (weapons) => {
