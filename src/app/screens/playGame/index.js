@@ -154,7 +154,7 @@ const PlayGame = () => {
             className={classes.text}
             onClick={() => setShowDialog(true)}
           >
-            share
+            invite other players
           </Button>
         </Box>
         <Box
@@ -231,7 +231,7 @@ const PlayGame = () => {
         </Box>
       </Box>
       <SimpleDialog
-        title="Share Join Game Link"
+        title="Invite Players With Link"
         open={showDialog}
         onClose={() => setShowDialog(false)}
       >
