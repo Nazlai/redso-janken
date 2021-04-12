@@ -1,7 +1,11 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import * as ROUTES from "constants/routes";
 import { Landing, GameList, JoinGame, PlayGame } from "screens";
+
+const NoMatch = () => {
+  return <Redirect to={ROUTES.LANDING} />;
+};
 
 const Routes = () => {
   return (
@@ -17,6 +21,9 @@ const Routes = () => {
       </Route>
       <Route path={ROUTES.PLAY_GAME}>
         <PlayGame />
+      </Route>
+      <Route>
+        <NoMatch />
       </Route>
     </Switch>
   );
