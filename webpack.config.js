@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const Dotenv = require("dotenv-webpack");
 const path = require("path");
@@ -80,6 +81,7 @@ const webpackConfig = {
   devtool: "source-map",
   plugins: [
     new Dotenv({ path: "./.env", systemvars: true }),
+    new FaviconsWebpackPlugin("./favicon-32x32.png"),
     new HtmlWebpackPlugin({
       title: "Janken",
       template: "./src/app/index.html",
