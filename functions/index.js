@@ -55,27 +55,32 @@ exports.commitMove = functions.https.onCall(async (data) => {
   const docRef = firestore.doc(`games/${gameId}/moves/${player}`);
 
   try {
-    const moveSnapshot = await movesRef.where("player", "==", player).get();
-    const isPlayerInCollection = moveSnapshot.size === 1;
-    if (isPlayerInCollection) {
-      const [move] = moveSnapshot.docs.map((doc) => doc.data());
-      return {
-        message: "You've already submitted a move",
-        warning: true,
-        move: move.weapon,
-      };
+    const doc = await firestore.doc(`games/${gameId}`).get();
+    if (!doc.exists) {
+      throw "Game not found";
     } else {
-      await docRef.set({
-        ...data,
-        created: admin.firestore.FieldValue.serverTimestamp(),
-      });
-      return {
-        message: "Move set",
-      };
+      const moveSnapshot = await movesRef.where("player", "==", player).get();
+      const isPlayerInCollection = moveSnapshot.size === 1;
+      if (isPlayerInCollection) {
+        const [move] = moveSnapshot.docs.map((doc) => doc.data());
+        return {
+          message: "You've already submitted a move",
+          warning: true,
+          move: move.weapon,
+        };
+      } else {
+        await docRef.set({
+          ...data,
+          created: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        return {
+          message: "Move set",
+        };
+      }
     }
   } catch (error) {
     printError("commit move", error);
-    return error;
+    throw new functions.https.HttpsError("not-found", error);
   }
 });
 
@@ -166,6 +171,6 @@ exports.joinGame = functions.https.onCall(async (data) => {
     return { message: "Joined game" };
   } catch (error) {
     printError("join game", error);
-    return error;
+    throw new functions.https.HttpsError("not-found", error);
   }
 });
