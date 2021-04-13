@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import { auth, cloudFunctions } from "firebaseUtils";
 import { LANDING, PLAY_GAME } from "constants/routes";
-import { SimpleDialog } from "components/dialog";
+import { SimpleDialog, CenterBox } from "components";
 
 const JoinGame = () => {
   const [showDialog, setShowDialog] = useState(false);
@@ -47,13 +47,7 @@ const JoinGame = () => {
 
   return (
     <Container>
-      <Box
-        height="calc(100vh - 64px)"
-        display="flex"
-        direction="column"
-        alignItems="center"
-        justify="center"
-      >
+      <CenterBox height="calc(100vh - 64px)">
         <Box width="100%" display="flex" justifyContent="center">
           <Card>
             <CardContent>
@@ -78,7 +72,7 @@ const JoinGame = () => {
             </CardActions>
           </Card>
         </Box>
-      </Box>
+      </CenterBox>
       <SimpleDialog title="Uh oh" open={showDialog} onClose={handleClose}>
         <Typography>Game does not exist</Typography>
         <Button color="primary" onClick={handleClose}>

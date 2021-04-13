@@ -1,8 +1,9 @@
 import React from "react";
 import { useHistory, Link } from "react-router-dom";
-import { Button, Typography, Box, Container } from "@material-ui/core";
+import { Typography, Box, Container } from "@material-ui/core";
 import { auth, cloudFunctions } from "firebaseUtils";
 import { PLAY_GAME, GAME_LIST } from "constants/routes";
+import { FullButton, CenterBox } from "components";
 import useStyles from "./style";
 
 const Landing = () => {
@@ -45,37 +46,18 @@ const Landing = () => {
           <Typography className={classes.text}>with your friends!</Typography>
         </Box>
       </Box>
-      <Box
-        height="50vh"
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Box p={1} width="70%">
-          <Button
-            size="large"
-            color="secondary"
-            variant="contained"
-            onClick={handleCreateGame}
-            fullWidth
-          >
-            new game
-          </Button>
-        </Box>
-        <Box p={1} width="70%">
+      <CenterBox height="50vh">
+        <Box p={1} width="70%" maxWidth="450px">
+          <Box mb={2}>
+            <FullButton size="large" onClick={handleCreateGame}>
+              new game
+            </FullButton>
+          </Box>
           <Link to={GAME_LIST} className={classes.link}>
-            <Button
-              size="large"
-              color="secondary"
-              variant="contained"
-              fullWidth
-            >
-              view games
-            </Button>
+            <FullButton>view games</FullButton>
           </Link>
         </Box>
-      </Box>
+      </CenterBox>
     </Container>
   );
 };
