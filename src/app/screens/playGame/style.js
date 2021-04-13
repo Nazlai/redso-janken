@@ -28,6 +28,9 @@ const useStyles = makeStyles((theme) => {
     feedback: {
       color: theme.palette.background.paper,
     },
+    navIcon: {
+      color: theme.palette.background.paper,
+    },
   };
 });
 
