@@ -80,7 +80,7 @@ const JoinGame = () => {
         </Box>
       </Box>
       <SimpleDialog title="Uh oh" open={showDialog} onClose={handleClose}>
-        <Typography>game does not exist</Typography>
+        <Typography>Game does not exist</Typography>
         <Button color="primary" onClick={handleClose}>
           Close
         </Button>
