@@ -1,32 +1,43 @@
 import React from "react";
-import { useLocation, Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
-import { AppBar, Toolbar, Typography } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Box, AppBar, Toolbar, Typography } from "@material-ui/core";
 import { LANDING } from "constants/routes";
 import useStyles from "./style";
 
-const capitalize = (string) => {
-  const firstLetter = string.slice(0, 1);
-  const rest = string.slice(1);
-  return firstLetter.toUpperCase().concat(rest.toLowerCase());
+const Logo = ({ classStyle }) => (
+  <Typography className={classStyle}>Janken</Typography>
+);
+
+Logo.propTypes = {
+  classStyle: PropTypes.string,
 };
 
-const Navigation = () => {
+const Navigation = ({ children, ...rest }) => {
   const classes = useStyles();
-  const { pathname } = useLocation();
-  const title = pathname.replace("/", "").split("-").map(capitalize).join(" ");
 
   return (
-    <AppBar position="sticky" color="secondary">
+    <AppBar position="sticky" color="primary" elevation={0}>
       <Toolbar>
-        <Link to={LANDING} className={classes.homeIcon}>
-          <FontAwesomeIcon icon={faHome} />
-        </Link>
-        <Typography>{title}</Typography>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+          {...rest}
+        >
+          <Link to={LANDING} className={classes.homeIcon}>
+            <Logo classStyle={classes.logo} />
+          </Link>
+          {children}
+        </Box>
       </Toolbar>
     </AppBar>
   );
+};
+
+Navigation.propTypes = {
+  children: PropTypes.node,
 };
 
 export const withNavigation = (Component) => {
